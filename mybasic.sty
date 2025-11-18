@@ -1,0 +1,234 @@
+% mybasic.sty - 简约 beamer 母版主题
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mybasic}[2025/11/18 Minimal beamer theme with CN/EN fonts]
+
+% 字体与国际化：使用 XeLaTeX
+\RequirePackage{ifxetex}
+\RequirePackage{ifluatex}
+\newif\ifxetexorluatex
+\ifxetex
+  \xetexorluatextrue
+\else
+  \ifluatex
+    \xetexorluatextrue
+  \else
+    \xetexorluatexfalse
+  \fi
+\fi
+
+\ifxetexorluatex
+  \RequirePackage{fontspec}
+  \RequirePackage{xeCJK}
+  % 英文字体：Arial（无衬线）
+  \setsansfont{Arial}
+  \setmainfont{Arial}
+  % 中文字体：宋体（SimSun）
+  \setCJKmainfont{SimSun}
+  \setCJKsansfont{SimSun}
+  % beamer 默认无衬线
+  \usefonttheme{professionalfonts}
+  \renewcommand{\familydefault}{\sfdefault}
+\else
+  % 非 XeLaTeX/LuaLaTeX 时给出友好提示
+  \PackageWarning{mybasic}{This theme requires XeLaTeX or LuaLaTeX for font settings.}
+\fi
+
+% 颜色与样式
+\RequirePackage{xcolor}
+\RequirePackage{tikz}
+\RequirePackage{graphicx}
+% 东南大学主题色：黄色 + 深蓝
+\definecolor{SEUYellow}{RGB}{255,204,0}
+\definecolor{Primary}{RGB}{0,51,102}          % 深蓝主色（结构、标题）
+\definecolor{Accent}{RGB}{255,204,0}          % 黄色辅助色
+\definecolor{FootlineBlue}{HTML}{1F487C}      % 页脚专用蓝色 #1f487c
+\definecolor{LightText}{RGB}{90,90,90}
+
+% 日期格式：DD/MM/YYYY（通过 datetime2）
+\RequirePackage[useregional]{datetime2}
+\DTMnewdatestyle{seu}{
+  \renewcommand{\DTMdisplaydate}[4]{%
+    \DTMtwodigits{##3}/\DTMtwodigits{##2}/##1%
+  }%
+  \renewcommand{\DTMDisplaydate}{\DTMdisplaydate}%
+}
+\DTMsetdatestyle{seu}
+
+\mode<presentation>{
+  \setbeamercolor{normal text}{fg=black,bg=white}
+  \setbeamercolor{structure}{fg=Primary}
+  \setbeamercolor{frametitle}{fg=Primary}
+  \setbeamercolor{section title}{fg=Primary}
+  \setbeamercolor{subtitle}{fg=LightText}
+  % 简约版 block：去掉色块背景，只保留文字与间距
+  \setbeamercolor{block title}{fg=Primary,bg=}
+  \setbeamercolor{block body}{fg=black,bg=}
+  \setbeamerfont{frametitle}{size=\Large}
+  \setbeamerfont{title}{size=\LARGE}
+  \setbeamerfont{subtitle}{size=\large}
+  \setbeamerfont{author}{size=\normalsize}
+  \setbeamerfont{date}{size=\normalsize}
+}
+
+% 全局重定义 block 形状为“无边框、无底色”的极简文字样式
+\setbeamertemplate{block begin}{%
+  \par\vspace{0.7ex}%
+  \noindent
+  {\usebeamerfont{block title}\color{Primary}\insertblocktitle\par}%
+  \vspace{0.25ex}%
+  \noindent
+}
+\setbeamertemplate{block end}{%
+  \par\vspace{0.6ex}%
+}
+
+% 去除默认导航符号
+\setbeamertemplate{navigation symbols}{}
+
+% 背景模板：保持为空白底色
+\setbeamertemplate{background}{}
+
+% 自定义内容页标题样式：左侧为校徽区域，标题整体右移，标题下方两条黄/蓝横线
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \vspace*{0.4em}% 标题整体距离页面顶部略微留白
+  \begin{beamercolorbox}[wd=\paperwidth,leftskip=1.8cm,rightskip=1em]{frametitle}%
+    \usebeamerfont{frametitle}%
+    \strut\insertframetitle\strut%
+  \end{beamercolorbox}%
+  % 把黄蓝线往上拉一点，让其几乎贴着标题底部
+  \vspace*{-1.4ex}%
+  \nointerlineskip%
+  % 紧贴标题绘制黄蓝双线
+  \begin{center}
+    \begin{tikzpicture}
+      % 上方细黄色线
+      \draw[line width=2pt,color=SEUYellow] (0,0) -- (0.9\linewidth,0);
+      % 下方更细深蓝线，使用与页脚一致的 FootlineBlue(#1f487c)
+      \draw[line width=2pt,color=FootlineBlue] (0,-0.10) -- (0.9\linewidth,-0.10);
+    \end{tikzpicture}
+  \end{center}
+  \vspace*{0.1em}%
+  % 在所有元素之后再绘制左上角 SEU 校徽 + 右上角 COIN logo，保证 logo 覆盖黄蓝线
+  \begin{tikzpicture}[remember picture,overlay]
+    % 左上角：东南大学校徽
+    \node[anchor=north west,xshift=0.2em,yshift=-0.2em] at (current page.north west) {%
+      \includegraphics[height=1.2cm]{images/template/seu_logo_yello_and_green.png}%
+    };
+    % 右上角：COIN 实验室 logo
+    \node[anchor=north east,xshift=-0.2em,yshift=-0.2em] at (current page.north east) {%
+      \includegraphics[height=1.3cm]{images/template/seu_coin_logo.png}%
+    };
+  \end{tikzpicture}%
+}
+
+% 页脚：蓝色背景(#1f487c)，三栏布局
+% 左：名字 + 日期(DD/MM/YYYY)
+% 中：自定义内容（通过 \footlinecenter 设置）
+% 右：页码 当前/总页
+\setbeamercolor{footline}{bg=FootlineBlue,fg=white}
+
+\newcommand{\mybasic@footlinecenter}{}%
+\newcommand{\footlinecenter}[1]{\renewcommand{\mybasic@footlinecenter}{#1}}%
+
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    % 左侧：作者 + 日期
+    \begin{beamercolorbox}[wd=.15\paperwidth,ht=2.8ex,dp=1.2ex,left]{footline}%
+      \hspace*{2mm}\insertshortauthor\quad\DTMtoday%
+    \end{beamercolorbox}%
+    % 中间：可自定义内容（推荐：Institute of Cognitive Intelligence / COIN）
+    \begin{beamercolorbox}[wd=.75\paperwidth,ht=2.8ex,dp=1.2ex,center]{footline}%
+      \mybasic@footlinecenter%
+    \end{beamercolorbox}%
+    % 右侧：页码
+    \begin{beamercolorbox}[wd=.10\paperwidth,ht=2.8ex,dp=1.2ex,right]{footline}%
+      \insertframenumber{} / \inserttotalframenumber\hspace*{2mm}%
+    \end{beamercolorbox}%
+  }%
+}
+
+% 标题页模板（东南大学 + COIN 风格）
+% 若在主文档中定义了 \advisor，则在作者下方自动显示指导老师信息
+\defbeamertemplate*{title page}{mybasic}{
+  \vspace*{1.5em}
+  {\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle\par}
+  \vspace{0.7em}
+  {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}
+  \vspace{1.8em}
+  {\usebeamerfont{author}\insertauthor\par}
+  \ifdefined\advisor
+    \vspace{0.5em}
+    {\usebeamerfont{author}\advisor\par}
+  \fi
+  \vspace{0.5em}
+  {\usebeamerfont{date}\insertdate\par}
+  \vfill
+  % 底部：单位（完全由 \institute 控制，不再强制附加 COIN，避免重复）
+  {\small
+    \ifx\insertinstitute\@empty\else\insertinstitute\par\fi
+  }
+}
+\setbeamertemplate{title page}[mybasic]
+
+% 分节页模板（Section Page）：去掉大色块，改为简约文字 + 细线
+\defbeamertemplate*{section page}{mybasic}{
+  \vspace*{1.8cm}
+  \begin{center}
+    % 上方小字：Part.X
+    {\color{LightText}\small Part.~\thesection}\par
+    \vspace{0.6em}
+    % 章节标题
+    {\usebeamerfont{title}\color{Primary}\insertsection\par}
+    \vspace{0.6em}
+    % 黄蓝细线，与内容页保持一致风格
+    \begin{tikzpicture}
+      \draw[line width=2pt,color=SEUYellow] (-0.45\linewidth,0) -- (0.45\linewidth,0);
+      \draw[line width=2pt,color=FootlineBlue] (-0.35\linewidth,-0.10) -- (0.35\linewidth,-0.10);
+    \end{tikzpicture}
+  \end{center}
+  \vspace*{1.5cm}
+}
+\setbeamertemplate{section page}[mybasic]
+
+% 自动在每个 \section 开头插入分节页和当前目录（可按需禁用）
+\newif\ifmybasic@sectiontoc
+\mybasic@sectiontoctrue
+\newcommand{\DisableSectionTOC}{\mybasic@sectiontocfalse}
+\newcommand{\EnableSectionTOC}{\mybasic@sectiontoctrue}
+
+\AtBeginSection[]{
+  \begin{frame}[plain]
+    \usebeamertemplate*{section page}
+  \end{frame}
+  \ifmybasic@sectiontoc
+    \begin{frame}{Outline}
+      \tableofcontents[currentsection]
+    \end{frame}
+  \fi
+}
+
+% 致谢页命令
+% 若定义了 \advisor，则在致谢页中一并展示姓名、指导老师与时间
+\newcommand{\thanksframe}[1][Thank You]{
+  \begin{frame}[plain]
+    \vfill
+    \begin{center}
+      {\usebeamerfont{title}\usebeamercolor[fg]{title}\LARGE #1\par}
+      \vspace{1.5em}
+      {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\normalsize
+        \insertauthor\par
+        \vspace{0.4em}
+        \ifdefined\advisor
+          \advisor\par
+          \vspace{0.4em}
+        \fi
+        \insertdate\par
+      }
+    \end{center}
+    \vfill
+  \end{frame}
+}
+
+

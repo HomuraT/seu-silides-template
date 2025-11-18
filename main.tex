@@ -1,0 +1,80 @@
+\documentclass[aspectratio=169]{beamer}
+
+% 使用自定义简约主题（母版）
+\usepackage{mybasic}
+
+% 主题元信息
+\title{示例演示 / Demo Presentation}
+\subtitle{简约 beamer 母版（中英双语、封面/目录/分节/致谢）}
+\author[Lin]{Lin Ren / 任林}
+\newcommand{\advisor}{指导老师：肖国辉}
+\institute{Southeast University \\ Institute of Cognitive Intelligence (COIN)}
+\date{\today}
+% 建议在页脚中放置实验室信息
+\footlinecenter{东南大学 COIN 模板}
+
+% 目录显示控制
+\setcounter{tocdepth}{2}
+
+\begin{document}
+
+% 首页（封面）
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% 总目录页
+\begin{frame}{Outline / 总目录}
+  \tableofcontents
+\end{frame}
+
+% ---------------- Section 1 ----------------
+\section{Introduction / 引言}
+
+\begin{frame}{What is Beamer?}
+Beamer is a LaTeX class for creating presentations.\\
+Beamer 是用于制作幻灯片的 LaTeX 文档类。
+\begin{itemize}
+  \item Clean typography with LaTeX
+  \item 高质量排版
+  \item Version control friendly / 便于版本管理
+\end{itemize}
+\end{frame}
+
+\begin{frame}{基本公式 / Math}
+示例：二项式定理
+\[
+  (a+b)^n=\sum_{k=0}^{n}\binom{n}{k}a^{n-k}b^k
+\]
+\end{frame}
+
+% ---------------- Section 2 ----------------
+\section{Design / 设计}
+
+\begin{frame}{统一样式 / Unified Style}
+\begin{block}{Fonts / 字体}
+English: Arial \quad 中文：宋体（SimSun）
+\end{block}
+
+\begin{block}{Colors / 颜色}
+主色（Primary）用于标题与强调；辅助色（Accent）用于局部强调。
+\end{block}
+\end{frame}
+
+\begin{frame}{列表 / Lists}
+\begin{enumerate}
+  \item 项目一 / Item 1
+  \item 项目二 / Item 2
+  \item 项目三 / Item 3
+\end{enumerate}
+\end{frame}
+
+% ---------------- Section 3 ----------------
+\section{Thanks / 致谢}
+
+% 致谢页
+\thanksframe[Thank You / 谢谢]
+
+\end{document}
+
+

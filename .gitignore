@@ -1,0 +1,64 @@
+# LaTeX 编译中间文件
+
+# 基础编译文件
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.synctex(busy)
+
+.cursor
+.vscode
+
+# Beamer 特定文件
+*.nav
+*.snm
+*.vrb
+
+# 目录文件
+*.lof
+*.lot
+*.lol
+
+# 索引文件
+*.idx
+*.ilg
+*.ind
+
+# 参考文献文件
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+
+# 其他辅助文件
+*.fdb_latexmk
+*.fls
+*.figlist
+*.makefile
+*.figlist
+*.thm
+*.end
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+
+# 编译后的 PDF（可选，如果不想提交 PDF 文件，取消下面的注释）
+# *.pdf
+
+# 编辑器临时文件
+*~
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# 备份文件
+*.bak
+*.backup
+
