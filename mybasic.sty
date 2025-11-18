@@ -22,9 +22,9 @@
   % 英文字体：Arial（无衬线）
   \setsansfont{Arial}
   \setmainfont{Arial}
-  % 中文字体：宋体（SimSun）
-  \setCJKmainfont{SimSun}
-  \setCJKsansfont{SimSun}
+  % 中文字体：宋体（SimSun），加粗时自动切换到黑体（SimHei）
+  \setCJKmainfont[BoldFont=SimHei]{SimSun}
+  \setCJKsansfont[BoldFont=SimHei]{SimSun}
   % beamer 默认无衬线
   \usefonttheme{professionalfonts}
   \renewcommand{\familydefault}{\sfdefault}
@@ -36,13 +36,21 @@
 % 颜色与样式
 \RequirePackage{xcolor}
 \RequirePackage{tikz}
+% 若环境较旧，shadows.blur 可能不可用；本模板仅使用标准 drop shadow，避免兼容性问题
 \RequirePackage{graphicx}
+% 圆角示例框
+\RequirePackage[most]{tcolorbox}
 % 东南大学主题色：黄色 + 深蓝
 \definecolor{SEUYellow}{RGB}{255,204,0}
 \definecolor{Primary}{RGB}{0,51,102}          % 深蓝主色（结构、标题）
 \definecolor{Accent}{RGB}{255,204,0}          % 黄色辅助色
 \definecolor{FootlineBlue}{HTML}{1F487C}      % 页脚专用蓝色 #1f487c
 \definecolor{LightText}{RGB}{90,90,90}
+% 额外用于示例高亮块的颜色
+\definecolor{SuccessGreen}{RGB}{0,140,0}
+\definecolor{AlertRed}{RGB}{200,0,0}
+% 某些外部宏可能引用名为 'k' 的颜色，这里将其安全地定义为黑色，避免 xcolor 报错
+\definecolor{k}{rgb}{0,0,0}
 
 % 日期格式：DD/MM/YYYY（通过 datetime2）
 \RequirePackage[useregional]{datetime2}
@@ -55,31 +63,36 @@
 \DTMsetdatestyle{seu}
 
 \mode<presentation>{
+  % 基本文字与结构色
   \setbeamercolor{normal text}{fg=black,bg=white}
   \setbeamercolor{structure}{fg=Primary}
-  \setbeamercolor{frametitle}{fg=Primary}
+
+  % 标题栏采用「常见 beamer 风格」：深色背景+白色标题
+  \setbeamercolor{frametitle}{fg=white,bg=Primary}
+  % 内容页与 Outline 页标题使用黑体加粗
+  \setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+
+  % 文稿标题、副标题等
+  \setbeamercolor{title}{fg=Primary}
   \setbeamercolor{section title}{fg=Primary}
   \setbeamercolor{subtitle}{fg=LightText}
-  % 简约版 block：去掉色块背景，只保留文字与间距
-  \setbeamercolor{block title}{fg=Primary,bg=}
-  \setbeamercolor{block body}{fg=black,bg=}
-  \setbeamerfont{frametitle}{size=\Large}
-  \setbeamerfont{title}{size=\LARGE}
+  % 标题使用黑体（加粗）效果
+  \setbeamerfont{title}{size=\LARGE,series=\bfseries}
+  % 目录中的章节/小节条目也加粗显示
+  \setbeamerfont{section in toc}{series=\bfseries}
+  \setbeamerfont{subsection in toc}{series=\bfseries}
   \setbeamerfont{subtitle}{size=\large}
   \setbeamerfont{author}{size=\normalsize}
   \setbeamerfont{date}{size=\normalsize}
-}
 
-% 全局重定义 block 形状为“无边框、无底色”的极简文字样式
-\setbeamertemplate{block begin}{%
-  \par\vspace{0.7ex}%
-  \noindent
-  {\usebeamerfont{block title}\color{Primary}\insertblocktitle\par}%
-  \vspace{0.25ex}%
-  \noindent
-}
-\setbeamertemplate{block end}{%
-  \par\vspace{0.6ex}%
+  % block 使用常见的有色标题条 + 浅色内容底色
+  \setbeamertemplate{blocks}[default]
+  \setbeamercolor{block title}{fg=white,bg=Primary}
+  \setbeamercolor{block body}{fg=black,bg=Primary!5}
+  \setbeamercolor{block title alerted}{fg=white,bg=red!70!black}
+  \setbeamercolor{block body alerted}{fg=black,bg=red!5}
+  \setbeamercolor{block title example}{fg=white,bg=Accent!90!black}
+  \setbeamercolor{block body example}{fg=black,bg=Accent!5}
 }
 
 % 去除默认导航符号
@@ -88,38 +101,20 @@
 % 背景模板：保持为空白底色
 \setbeamertemplate{background}{}
 
-% 自定义内容页标题样式：左侧为校徽区域，标题整体右移，标题下方两条黄/蓝横线
+% 自定义内容页标题样式：无 logo，居左标题，简洁无横线
+% 使用较小的对称上下内边距，让标题在较细的深蓝色背景条中垂直居中
 \setbeamertemplate{frametitle}{%
   \nointerlineskip%
-  \vspace*{0.4em}% 标题整体距离页面顶部略微留白
-  \begin{beamercolorbox}[wd=\paperwidth,leftskip=1.8cm,rightskip=1em]{frametitle}%
+  \vspace*{0.2em}% 页面顶部与色块之间稍微拉开
+  \begin{beamercolorbox}[%
+      wd=\paperwidth,
+      sep=0.2ex, % 减小上下等距内边距，让色条更细但仍垂直居中
+      leftskip=0.6cm,
+      rightskip=1.2cm
+    ]{frametitle}%
     \usebeamerfont{frametitle}%
     \strut\insertframetitle\strut%
   \end{beamercolorbox}%
-  % 把黄蓝线往上拉一点，让其几乎贴着标题底部
-  \vspace*{-1.4ex}%
-  \nointerlineskip%
-  % 紧贴标题绘制黄蓝双线
-  \begin{center}
-    \begin{tikzpicture}
-      % 上方细黄色线
-      \draw[line width=2pt,color=SEUYellow] (0,0) -- (0.9\linewidth,0);
-      % 下方更细深蓝线，使用与页脚一致的 FootlineBlue(#1f487c)
-      \draw[line width=2pt,color=FootlineBlue] (0,-0.10) -- (0.9\linewidth,-0.10);
-    \end{tikzpicture}
-  \end{center}
-  \vspace*{0.1em}%
-  % 在所有元素之后再绘制左上角 SEU 校徽 + 右上角 COIN logo，保证 logo 覆盖黄蓝线
-  \begin{tikzpicture}[remember picture,overlay]
-    % 左上角：东南大学校徽
-    \node[anchor=north west,xshift=0.2em,yshift=-0.2em] at (current page.north west) {%
-      \includegraphics[height=1.2cm]{images/template/seu_logo_yello_and_green.png}%
-    };
-    % 右上角：COIN 实验室 logo
-    \node[anchor=north east,xshift=-0.2em,yshift=-0.2em] at (current page.north east) {%
-      \includegraphics[height=1.3cm]{images/template/seu_coin_logo.png}%
-    };
-  \end{tikzpicture}%
 }
 
 % 页脚：蓝色背景(#1f487c)，三栏布局
@@ -149,30 +144,61 @@
   }%
 }
 
-% 标题页模板（东南大学 + COIN 风格）
+% 标题页模板（大色块标题 + 下方作者/单位/日期，仿参考图布局）
 % 若在主文档中定义了 \advisor，则在作者下方自动显示指导老师信息
 \defbeamertemplate*{title page}{mybasic}{
+  % 顶部留白（与标题大色条保持距离）
   \vspace*{1.5em}
-  {\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle\par}
-  \vspace{0.7em}
-  {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}
-  \vspace{1.8em}
-  {\usebeamerfont{author}\insertauthor\par}
-  \ifdefined\advisor
-    \vspace{0.5em}
-    {\usebeamerfont{author}\advisor\par}
-  \fi
-  \vspace{0.5em}
-  {\usebeamerfont{date}\insertdate\par}
-  \vfill
-  % 底部：单位（完全由 \institute 控制，不再强制附加 COIN，避免重复）
-  {\small
-    \ifx\insertinstitute\@empty\else\insertinstitute\par\fi
+
+  %============== 顶部左右角 Logo（overlay 不参与排版） ==================
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north west,xshift=0.8cm,yshift=-0.15cm] at (current page.north west)
+      {\includegraphics[height=1.4cm]{images/template/seu_logo_yello_and_green.png}};
+    \node[anchor=north east,xshift=-0.8cm,yshift=-0.25cm] at (current page.north east)
+      {\includegraphics[height=1.4cm]{images/template/seu_coin_logo.png}};
+  \end{tikzpicture}
+
+%============== 主标题大色条（圆角、柔和渐变阴影） ==================
+  \begin{center}
+    \begin{tcolorbox}[
+      enhanced,
+      width=0.9\paperwidth,
+      colback=Primary,
+      colframe=Primary,
+      arc=2mm,
+      left=6mm,right=6mm,top=3mm,bottom=3mm,
+      % 使用模糊阴影：边缘逐渐变浅（透明度略低，整体更轻）
+      drop fuzzy shadow,
+      shadow={0mm}{-0.8mm}{1.2mm}{black!30!white},
+      boxrule=0pt,
+    ]
+      {\usebeamerfont{title}\color{white}\inserttitle\par}
+      \vspace{0.3em}
+      {\usebeamerfont{subtitle}\color{white}\insertsubtitle}
+    \end{tcolorbox}
+  \end{center}
+
+  %============== 下方作者/单位/日期 ==================
+  \vspace{1.4em}
+  {\centering
+    {\usebeamerfont{author}\insertauthor\par}
+    \ifdefined\advisor
+      \vspace{0.5em}
+      {\usebeamerfont{author}\advisor\par}
+    \fi
+    % 单位（如果有定义 \institute，则显示）
+    \ifx\insertinstitute\@empty\else
+      \vspace{1.0em}
+      {\normalsize \insertinstitute\par}
+    \fi
+    % 日期在最底部（居中）
+    \vspace{1.0em}
+    {\usebeamerfont{date}\insertdate\par}
   }
 }
 \setbeamertemplate{title page}[mybasic]
 
-% 分节页模板（Section Page）：去掉大色块，改为简约文字 + 细线
+% 分节页模板（Section Page）：居中标题 + Part.X 小字（不再绘制下方装饰横线，保持极简）
 \defbeamertemplate*{section page}{mybasic}{
   \vspace*{1.8cm}
   \begin{center}
@@ -181,27 +207,31 @@
     \vspace{0.6em}
     % 章节标题
     {\usebeamerfont{title}\color{Primary}\insertsection\par}
-    \vspace{0.6em}
-    % 黄蓝细线，与内容页保持一致风格
-    \begin{tikzpicture}
-      \draw[line width=2pt,color=SEUYellow] (-0.45\linewidth,0) -- (0.45\linewidth,0);
-      \draw[line width=2pt,color=FootlineBlue] (-0.35\linewidth,-0.10) -- (0.35\linewidth,-0.10);
-    \end{tikzpicture}
+    \vspace{0.8em}
   \end{center}
-  \vspace*{1.5cm}
+  \vspace*{1.2cm}
 }
 \setbeamertemplate{section page}[mybasic]
 
 % 自动在每个 \section 开头插入分节页和当前目录（可按需禁用）
+% 分节页开关（默认开启）：只想保留 Outline、不要 Part.X 分节页时，可在主文档中调用 \DisableSectionPage
+\newif\ifmybasic@sectionpage
+\mybasic@sectionpagetrue
+\newcommand{\DisableSectionPage}{\mybasic@sectionpagefalse}
+\newcommand{\EnableSectionPage}{\mybasic@sectionpagetrue}
+
+% Section 内部小目录开关（默认开启）
 \newif\ifmybasic@sectiontoc
 \mybasic@sectiontoctrue
 \newcommand{\DisableSectionTOC}{\mybasic@sectiontocfalse}
 \newcommand{\EnableSectionTOC}{\mybasic@sectiontoctrue}
 
 \AtBeginSection[]{
-  \begin{frame}[plain]
-    \usebeamertemplate*{section page}
-  \end{frame}
+  \ifmybasic@sectionpage
+    \begin{frame}[plain]
+      \usebeamertemplate*{section page}
+    \end{frame}
+  \fi
   \ifmybasic@sectiontoc
     \begin{frame}{Outline}
       \tableofcontents[currentsection]
@@ -212,7 +242,7 @@
 % 致谢页命令
 % 若定义了 \advisor，则在致谢页中一并展示姓名、指导老师与时间
 \newcommand{\thanksframe}[1][Thank You]{
-  \begin{frame}[plain]
+\begin{frame}[plain,label=frame-thanks]
     \vfill
     \begin{center}
       {\usebeamerfont{title}\usebeamercolor[fg]{title}\LARGE #1\par}
@@ -231,4 +261,162 @@
   \end{frame}
 }
 
+% 通用“示例”圆角框环境：简洁卡片风（左侧主色竖条 + 轻微阴影）
+\newtcolorbox{examplebox}[1][]{
+  enhanced,
+  colback=white,            % 内容区白色
+  colframe=Primary!20,      % 外框淡色描边
+  boxrule=0.4pt,
+  arc=1.2mm,                % 轻微圆角
+  left=3mm,
+  right=3mm,
+  top=2mm,
+  bottom=2mm,
+  borderline west={2pt}{0pt}{Primary}, % 左侧主色竖条
+  drop shadow=black!10,     % 较轻阴影
+  title=#1,
+  fonttitle=\bfseries,
+  coltitle=Primary,
+  colbacktitle=white,
+  attach boxed title to top left={
+    yshift*=-1mm,
+    xshift=2.5mm
+  },
+  boxed title style={
+    empty,
+    left=0pt,
+    right=0pt,
+    top=0.5mm,
+    bottom=0.5mm
+  }
+}
+
+% 黄色提示框：适合“提示 / 注意”等内容
+\newtcolorbox{exampleboxAccent}[1][]{
+  enhanced,
+  colback=Accent!5,
+  colframe=Accent!60!Primary,
+  boxrule=0.4pt,
+  arc=1.2mm,
+  left=3mm,
+  right=3mm,
+  top=2mm,
+  bottom=2mm,
+  borderline west={2pt}{0pt}{Accent!90!Primary},
+  drop shadow=black!8,
+  title=#1,
+  fonttitle=\bfseries,
+  coltitle=black,
+  colbacktitle=Accent!15,
+  attach boxed title to top left={
+    yshift*=-1mm,
+    xshift=2.5mm
+  },
+  boxed title style={
+    empty,
+    left=0pt,
+    right=0pt,
+    top=0.5mm,
+    bottom=0.5mm
+  }
+}
+
+% 极简描边框：无阴影、细描边，适合“定理 / 证明 / 公式推导”等安静内容
+\newtcolorbox{exampleboxOutline}[1][]{
+  enhanced,
+  colback=white,
+  colframe=Primary!30,
+  boxrule=0.4pt,
+  sharp corners,
+  left=3mm,
+  right=3mm,
+  top=1.5mm,
+  bottom=1.5mm,
+  title=#1,
+  fonttitle=\bfseries,
+  coltitle=Primary,
+  colbacktitle=white,
+  attach boxed title to top left={
+    yshift*=-0.8mm,
+    xshift=0pt
+  },
+  boxed title style={
+    empty,
+    left=0pt,
+    right=0pt,
+    top=0pt,
+    bottom=0.5mm
+  }
+}
+
+% ================== 高亮文本块（“标题条 + 阴影”风格） ==================
+% 参考示例图：顶部整条色块标题 + 圆角浅灰背景 + 明显阴影
+
+\newtcolorbox{highlightblockPrimary}[1][]{
+  enhanced,
+  colback=black!2,              % 内容浅灰背景
+  colframe=Primary,             % 外框主色
+  boxrule=0pt,
+  arc=2mm,                      % 整体圆角（标题与内容共享）
+  left=4mm,
+  right=4mm,
+  top=2mm,
+  bottom=2mm,
+  % 模糊阴影：中心略深、边缘渐淡（整体偏淡）
+  drop fuzzy shadow,
+  shadow={0mm}{-0.7mm}{1.0mm}{black!25!white},
+  title=#1,
+  fonttitle=\bfseries,
+  coltitle=white,
+  colbacktitle=Primary,
+  % 让标题占据与内容等宽的整条顶部区域（圆角矩形）
+  toptitle=1mm,
+  bottomtitle=1mm,
+  lefttitle=4mm,
+  righttitle=4mm
+}
+
+\newtcolorbox{highlightblockSuccess}[1][]{
+  enhanced,
+  colback=black!2,
+  colframe=SuccessGreen,
+  boxrule=0pt,
+  arc=2mm,
+  left=4mm,
+  right=4mm,
+  top=2mm,
+  bottom=2mm,
+  drop fuzzy shadow,
+  shadow={0mm}{-0.7mm}{1.0mm}{black!22!white},
+  title=#1,
+  fonttitle=\bfseries,
+  coltitle=white,
+  colbacktitle=SuccessGreen,
+  toptitle=1mm,
+  bottomtitle=1mm,
+  lefttitle=4mm,
+  righttitle=4mm
+}
+
+\newtcolorbox{highlightblockAlert}[1][]{
+  enhanced,
+  colback=AlertRed!5,
+  colframe=AlertRed,
+  boxrule=0pt,
+  arc=2mm,
+  left=4mm,
+  right=4mm,
+  top=2mm,
+  bottom=2mm,
+  drop fuzzy shadow,
+  shadow={0mm}{-0.7mm}{1.0mm}{black!28!white},
+  title=#1,
+  fonttitle=\bfseries,
+  coltitle=white,
+  colbacktitle=AlertRed,
+  toptitle=1mm,
+  bottomtitle=1mm,
+  lefttitle=4mm,
+  righttitle=4mm
+}
 

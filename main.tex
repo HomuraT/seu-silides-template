@@ -3,7 +3,7 @@
 % 使用自定义简约主题（母版）
 \usepackage{mybasic}
 
-% 主题元信息
+% 主题元信息（根据需要修改成自己的内容）
 \title{示例演示 / Demo Presentation}
 \subtitle{简约 beamer 母版（中英双语、封面/目录/分节/致谢）}
 \author[Lin]{Lin Ren / 任林}
@@ -12,6 +12,9 @@
 \date{\today}
 % 建议在页脚中放置实验室信息
 \footlinecenter{东南大学 COIN 模板}
+
+% 只保留 Outline，不再自动插入 Part.X 分节页
+\DisableSectionPage
 
 % 目录显示控制
 \setcounter{tocdepth}{2}
@@ -23,57 +26,46 @@
   \titlepage
 \end{frame}
 
-% 总目录页
+% 总目录页（展示所有章节）
 \begin{frame}{Outline / 总目录}
   \tableofcontents
 \end{frame}
 
-% ---------------- Section 1 ----------------
-\section{Introduction / 引言}
+% 功能索引页：点击条目可跳转到对应示例页
+\begin{frame}{Feature Index / 功能索引}
+  \begin{columns}[t]
+    \column{0.48\textwidth}
+      \textbf{基础示例}
+      \begin{itemize}
+        \item \hyperlink{frame-how-to-use}{快速上手：如何使用本模板}
+        \item \hyperlink{frame-minimal-example}{最小示例：最小 Beamer 代码}
+        \item \hyperlink{frame-plain-text}{文本与中英混排示例}
+        \item \hyperlink{frame-lists}{项目符号与编号列表}
+      \end{itemize}
 
-\begin{frame}{What is Beamer?}
-Beamer is a LaTeX class for creating presentations.\\
-Beamer 是用于制作幻灯片的 LaTeX 文档类。
-\begin{itemize}
-  \item Clean typography with LaTeX
-  \item 高质量排版
-  \item Version control friendly / 便于版本管理
-\end{itemize}
+    \column{0.48\textwidth}
+      \textbf{高级示例}
+      \begin{itemize}
+        \item \hyperlink{frame-math-inline}{数学公式：行内与行间}
+        \item \hyperlink{frame-math-aligned}{数学公式：对齐公式}
+        \item \hyperlink{frame-figures}{插入图片示例}
+        \item \hyperlink{frame-table}{简单表格示例}
+        \item \hyperlink{frame-examplebox}{示例框 examplebox}
+        \item \hyperlink{frame-highlight-1}{高亮文本块 highlightblock}
+        \item \hyperlink{frame-tikz-diagram}{TikZ 示意图}
+        \item \hyperlink{frame-thanks}{致谢页模板}
+      \end{itemize}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{基本公式 / Math}
-示例：二项式定理
-\[
-  (a+b)^n=\sum_{k=0}^{n}\binom{n}{k}a^{n-k}b^k
-\]
-\end{frame}
+% ---------------- Sections 内容从 ./sections 引入 ----------------
 
-% ---------------- Section 2 ----------------
-\section{Design / 设计}
-
-\begin{frame}{统一样式 / Unified Style}
-\begin{block}{Fonts / 字体}
-English: Arial \quad 中文：宋体（SimSun）
-\end{block}
-
-\begin{block}{Colors / 颜色}
-主色（Primary）用于标题与强调；辅助色（Accent）用于局部强调。
-\end{block}
-\end{frame}
-
-\begin{frame}{列表 / Lists}
-\begin{enumerate}
-  \item 项目一 / Item 1
-  \item 项目二 / Item 2
-  \item 项目三 / Item 3
-\end{enumerate}
-\end{frame}
-
-% ---------------- Section 3 ----------------
-\section{Thanks / 致谢}
-
-% 致谢页
-\thanksframe[Thank You / 谢谢]
+\input{sections/01-quick-start}
+\input{sections/02-text-and-lists}
+\input{sections/03-math}
+\input{sections/04-figures-and-tables}
+\input{sections/05-advanced-examples}
+\input{sections/06-thanks}
 
 \end{document}
 

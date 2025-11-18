@@ -1,0 +1,90 @@
+\section{Advanced Examples / 高级示例}
+
+\begin{frame}[label=frame-examplebox]{示例框 environment / Example Box}
+  \begin{examplebox}[Key Idea / 核心思想]
+    使用 \texttt{examplebox} 环境可以突出关键信息：
+    \begin{itemize}
+      \item 适合写“定理 / 结论 / 提示 / 注意”这类内容；
+      \item 左侧主色竖条 + 轻微阴影，整体更接近“卡片风”样式；
+      \item 可以嵌套普通列表、公式等内容。
+    \end{itemize}
+  \end{examplebox}
+\end{frame}
+
+\begin{frame}[label=frame-examplebox-more-1]{更多示例框风格 / More Example Box Styles (1)}
+  \begin{examplebox}[Default / 默认示例框]
+    用于一般性的“结论 / 关键步骤 / 小结”，视觉重点适中，不会喧宾夺主。
+  \end{examplebox}
+
+  \begin{exampleboxAccent}[Tip / 提示框]
+    适合写“提示 / 注意 / 常见错误”：
+    \begin{itemize}
+      \item 使用东南大学黄色作为主色，更醒目；
+      \item 适合在复杂公式或代码前后给出自然语言提醒。
+    \end{itemize}
+  \end{exampleboxAccent}
+
+\end{frame}
+
+\begin{frame}[label=frame-examplebox-more-2]{更多示例框风格 / More Example Box Styles (2)}
+  \begin{exampleboxOutline}[Sketch / 极简框]
+    极简细描边 + 无阴影：\par
+    \begin{itemize}
+      \item 适合“证明思路 / 草稿推导 / 伪代码框架”等内容；
+      \item 与周围文本融为一体，只做轻微分组，不抢视线。
+    \end{itemize}
+  \end{exampleboxOutline}
+\end{frame}
+
+\begin{frame}[label=frame-highlight-1]{高亮文本块示例 / Highlighted Text Blocks (1)}
+  \begin{highlightblockPrimary}[Block Title / 主色块标题]
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer lectus nisl, ultricies in feugiat rutrum, porttitor sit amet augue.
+  \end{highlightblockPrimary}
+
+  \vspace{0.35em}
+
+  \begin{highlightblockSuccess}[Example Block Title / 成功示例块]
+    Aliquam ut tortor mauris. Sed volutpat ante purus, quis accumsan justo cursus in.
+  \end{highlightblockSuccess}
+
+  \vspace{0.4em}
+\end{frame}
+
+\begin{frame}[label=frame-highlight-2]{高亮文本块示例 / Highlighted Text Blocks (2)}
+  \begin{highlightblockAlert}[Alert Block Title / 警告示例块]
+    Pellentesque sed tellus purus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+  \end{highlightblockAlert}
+\end{frame}
+
+\begin{frame}[label=frame-multicol]{Multiple Columns}
+  \framesubtitle{Subtitle}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.42\textwidth}
+      {\bfseries Heading}\par
+      \vspace{0.4em}
+      \begin{enumerate}
+        \item Statement
+        \item Explanation
+        \item Example
+      \end{enumerate}
+
+    \column{0.58\textwidth}
+      \begin{highlightblockPrimary}[]
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer lectus nisl, ultricies in feugiat rutrum, porttitor sit amet augue. Aliquam ut tortor mauris. Sed volutpat ante purus, quis accumsan dolor.
+      \end{highlightblockPrimary}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[label=frame-tikz-diagram]{TikZ 示意图 / TikZ Diagram}
+  \begin{center}
+    \begin{tikzpicture}[node distance=1.8cm,>=stealth]
+      \node[draw,rounded corners,fill=SEUYellow!20] (input) {Input};
+      \node[draw,rounded corners,right of=input,fill=Primary!10] (model) {Model};
+      \node[draw,rounded corners,right of=model,fill=SEUYellow!20] (output) {Output};
+      \draw[->,thick,Primary] (input) -- (model);
+      \draw[->,thick,Primary] (model) -- (output);
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+
